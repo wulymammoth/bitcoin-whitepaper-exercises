@@ -1,10 +1,25 @@
 "use strict";
 
-var crypto = require("crypto");
+const crypto = require("crypto");
+
+const blockHash = (bl) => crypto.createHash("sha256").update(bl).digest("hex");
+
+const createBlock = (chain, data) => {
+	let block = {
+		data: data,
+		index: chain.blocks.length,
+		prevHash: chain.blocks[chain.blocks.length - 1].hash,
+		timestamp: Date.now(),
+	};
+	block.hash = blockHash(JSON.stringify(block));
+	return block;
+};
+
+// **********************************
 
 // The Power of a Smile
 // by Tupac Shakur
-var poem = [
+const poem = [
 	"The power of a gun can kill",
 	"and the power of fire can burn",
 	"the power of wind can chill",
@@ -15,7 +30,7 @@ var poem = [
 	"especially yours can heal a frozen heart",
 ];
 
-var Blockchain = {
+const Blockchain = {
 	blocks: [],
 };
 
@@ -32,20 +47,3 @@ poem.forEach((line) => Blockchain.blocks.push(createBlock(Blockchain, line)));
 Blockchain.blocks.forEach(console.log);
 
 // console.log(`Blockchain is valid: ${verifyChain(Blockchain)}`);
-
-// **********************************
-
-function blockHash(bl) {
-	return crypto.createHash("sha256").update(bl).digest("hex");
-}
-
-function createBlock(chain, data) {
-	let block = {
-		data: data,
-		index: chain.blocks.length,
-		prevHash: chain.blocks[chain.blocks.length - 1].hash,
-		timestamp: Date.now(),
-	};
-	block.hash = blockHash(JSON.stringify(block));
-	return block;
-}
