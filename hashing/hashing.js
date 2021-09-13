@@ -21,23 +21,31 @@ var Blockchain = {
 
 // Genesis block
 Blockchain.blocks.push({
-	index: 0,
-	hash: "000000",
 	data: "",
+	hash: "000000",
+	index: 0,
 	timestamp: Date.now(),
 });
 
-// TODO: insert each line into blockchain
-// for (let line of poem) {
-// }
+poem.forEach((line) => Blockchain.blocks.push(createBlock(Blockchain, line)));
+
+Blockchain.blocks.forEach(console.log);
 
 // console.log(`Blockchain is valid: ${verifyChain(Blockchain)}`);
-
 
 // **********************************
 
 function blockHash(bl) {
-	return crypto.createHash("sha256").update(
-		// TODO: use block data to calculate hash
-	).digest("hex");
+	return crypto.createHash("sha256").update(bl).digest("hex");
+}
+
+function createBlock(chain, data) {
+	let block = {
+		data: data,
+		index: chain.blocks.length,
+		prevHash: chain.blocks[chain.blocks.length - 1].hash,
+		timestamp: Date.now(),
+	};
+	block.hash = blockHash(JSON.stringify(block));
+	return block;
 }
