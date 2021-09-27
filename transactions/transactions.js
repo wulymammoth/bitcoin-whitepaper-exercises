@@ -44,15 +44,20 @@ addPoem()
 async function addPoem() {
 	var transactions = [];
 
-	// TODO: add poem lines as authorized transactions
-	// for (let line of poem) {
-	// }
+	for (let line of poem) {
+		transactions.push(await authorizeTransaction(createTransaction(line)))
+	}
 
 	var bl = createBlock(transactions);
 
 	Blockchain.blocks.push(bl);
 
 	return Blockchain;
+}
+
+function createTransaction(line) {
+	const transaction = { data: line }
+	return Object.assign(transaction, { hash: transactionHash(transaction) })
 }
 
 async function checkPoem(chain) {
@@ -78,7 +83,12 @@ function transactionHash(tr) {
 	).digest("hex");
 }
 
-async function createSignature(text,privKey) {
+async function authorizeTransaction(transaction, privKeyText = PRIV_KEY_TEXT, pubKeyText = PUB_KEY_TEXT) {
+	const sig = await createSignature(transaction.hash, privKeyText)
+	return Object.assign(transaction, { pubKey: pubKeyText, signature: sig })
+}
+
+async function createSignature(text, privKey) {
 	var privKeyObj = openpgp.key.readArmored(privKey).keys[0];
 
 	var options = {
