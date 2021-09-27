@@ -139,9 +139,18 @@ async function verifyBlock(bl) {
 		if (!Array.isArray(bl.data)) return false;
 
 		// TODO: verify transactions in block
+		bl.data.forEach(verifyTransaction)
 	}
 
 	return true;
+}
+
+function verifyTransaction(transaction) {
+	// should include `pubKey` string and `signature` string fields
+	if (transaction.data == null) return false;
+	if (typeof transaction.pubKey !== "string") return false;
+	if (typeof transaction.signature !== "string") return false;
+	return verifySignature(transaction.signature, transaction.pubKey)
 }
 
 async function verifyChain(chain) {
